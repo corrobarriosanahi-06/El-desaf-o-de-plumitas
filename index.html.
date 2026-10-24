@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Desafío de Plumitas</title>
+<style>
+:root{--ink:#26334a;--cream:#fff8e8;--gold:#f4c65d;--teal:#8fd3cf;--pink:#f3a5b5;--lilac:#b9a5e8;--green:#d5efc4}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:linear-gradient(135deg,#f4eaff,#e3f7f4);min-height:100vh;display:grid;place-items:center;padding:18px}
+.app{width:min(760px,100%);background:var(--cream);border:4px solid white;border-radius:28px;box-shadow:0 18px 55px #38415a25;overflow:hidden}
+header{padding:22px 22px 8px;text-align:center;background:#fff3d2}
+.owl{font-size:76px;line-height:1.1;filter:drop-shadow(0 4px 0 #e8d7b2)}
+h1{font-size:clamp(1.7rem,6vw,2.7rem);margin:8px 0 4px;color:#684a37}
+.subtitle{margin:0 0 12px;font-weight:600}
+main{padding:22px}
+.screen{display:none}.screen.active{display:block}
+h2{margin:0 0 12px;font-size:1.5rem}
+p{line-height:1.5}
+button{font:inherit;font-weight:700;border:0;border-radius:14px;padding:13px 16px;cursor:pointer;color:var(--ink);background:var(--gold);box-shadow:0 3px 0 #d6a73f;transition:transform .12s}
+button:active{transform:translateY(2px);box-shadow:none}
+.primary{display:block;width:100%;margin-top:14px;background:#f3a5b5;box-shadow:0 3px 0 #d47e91}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.category{min-height:104px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px}
+.category span{font-size:1.8rem}.category small{font-weight:500}
+.gold{background:var(--gold);box-shadow:0 3px 0 #d6a73f}.teal{background:var(--teal);box-shadow:0 3px 0 #5da9a4}.pink{background:var(--pink);box-shadow:0 3px 0 #d47e91}.lilac{background:var(--lilac);box-shadow:0 3px 0 #9380c5}
+.pill{display:inline-block;background:#e9e2fa;padding:5px 10px;border-radius:99px;font-size:.85rem;font-weight:700;margin-bottom:10px}
+.question{font-size:1.25rem;font-weight:750;line-height:1.4;margin:6px 0 18px}
+.answers{display:grid;gap:10px}.answer{background:white;border:2px solid #e5dfd0;box-shadow:none;text-align:left;font-weight:600}.answer:hover{border-color:#b9a5e8}
+.answer.correct{background:#e1f5d8;border-color:#79b96b}.answer.wrong{background:#ffe0e4;border-color:#e68d9a}
+.feedback{min-height:26px;font-weight:700;margin-top:12px}.meta{display:flex;justify-content:space-between;gap:10px;color:#69738a;font-size:.9rem;margin-bottom:12px}
+.progress{height:8px;background:#e8e2d5;border-radius:9px;overflow:hidden;margin:10px 0 18px}.bar{height:100%;width:0;background:#80c8bd;transition:width .2s}
+.center{text-align:center}.score{font-size:3rem;font-weight:850;color:#684a37}.muted{color:#667085}
+footer{text-align:center;padding:0 20px 18px;font-size:.82rem;color:#758094}
+@media(max-width:440px){main{padding:17px}.grid{gap:9px}.category{padding:10px 6px}.owl{font-size:64px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="owl" aria-label="búho">🦉</div><h1>El Desafío de Plumitas</h1><p class="subtitle">¡Poné a prueba tus conocimientos sobre el imperialismo!</p></header>
+<main>
+<section id="home" class="screen active center">
+<h2>¡Hola! Soy el Profesor Plumitas</h2>
+<p>Te acompaño en esta aventura por la historia. Respondé las preguntas y sumá puntos. ¡Muchos éxitos!</p>
+<button class="primary" onclick="startAll()">¡Comenzar!</button>
+</section>
+
+<section id="quiz" class="screen">
+<div class="meta"><span id="counter"></span></div><div class="progress"><div id="bar" class="bar"></div></div>
+<div class="question" id="question"></div><div id="answers" class="answers"></div><div id="feedback" class="feedback" aria-live="polite"></div>
+<button id="next" class="primary" style="display:none" onclick="nextQuestion()">Siguiente pregunta →</button>
+</section>
+<section id="results" class="screen center">
+<div class="owl">🎉🦉</div><h2>¡Terminaste el desafío!</h2><div class="score" id="score"></div><p id="resultText"></p>
+<button class="primary" onclick="startAll()">Volver a jugar</button>
+</section>
+</main><footer>El Desafío de Plumitas · Historia · ¡Aprender también puede ser divertido!</footer>
+</div>
+<script>
+const bank=[
+{cat:"imperialismo",q:"¿Qué fue el imperialismo?",a:["La expansión del dominio de un país sobre otro territorio","Una revolución que eliminó las industrias","Un acuerdo para que todos los países tuvieran el mismo gobierno"],c:0,why:"El imperialismo consiste en extender el dominio de una potencia sobre otros territorios."},
+{cat:"imperialismo",q:"¿Cuál de estos países fue una potencia imperialista?",a:["Nepal","Gran Bretaña","Paraguay"],c:1,why:"Gran Bretaña fue una de las principales potencias imperialistas."},
+{cat:"imperialismo",q:"¿Qué buscaban las potencias imperialistas, entre otras cosas?",a:["Cerrar todas las rutas comerciales","Conseguir materias primas y nuevos mercados","Evitar toda expansión territorial"],c:1,why:"Las potencias buscaban materias primas, nuevos mercados y ampliar su influencia."},
+{cat:"surgimiento",q:"¿En qué período surgió el imperialismo moderno estudiado en este tema?",a:["A mediados del siglo XIX","A principios del siglo VIII","A fines del siglo XII"],c:0,why:"El imperialismo moderno estudiado en este tema surgió a mediados del siglo XIX."},
+{cat:"surgimiento",q:"¿Qué favoreció el surgimiento del imperialismo moderno?",a:["La desaparición del comercio","El abandono de la industria","La Revolución Industrial y la economía capitalista"],c:2,why:"La Revolución Industrial y la economía capitalista favorecieron el imperialismo moderno."},
+{cat:"surgimiento",q:"¿Por qué las potencias industriales buscaban territorios fuera de Europa?",a:["Para dejar de producir bienes","Para obtener recursos y ampliar mercados","Para eliminar el transporte marítimo"],c:1,why:"Buscaban recursos y mercados para sostener y ampliar su actividad económica."},
+{cat:"imperialismo",q:"¿Qué continentes fueron especialmente afectados por el imperialismo europeo?",a:["África y Asia","Europa y Oceanía","América del Norte y Europa"],c:0,why:"África y Asia fueron especialmente afectadas por la expansión imperialista europea."},
+{cat:"imperialismo",q:"¿Cuál era uno de los principales objetivos de las potencias imperialistas?",a:["Terminar con el comercio internacional","Dar independencia a todas las colonias","Conseguir materias primas y nuevos mercados"],c:2,why:"Las potencias buscaban materias primas y nuevos mercados para sus economías."},
+{cat:"imperialismo",q:"¿Qué se conoce como una colonia durante el imperialismo?",a:["Un país que domina a otras potencias","Un territorio dominado por una potencia extranjera","Un territorio completamente independiente"],c:1,why:"Una colonia es un territorio sometido al dominio de una potencia extranjera."},
+{cat:"tipos",q:"¿Qué tipos de imperialismo hay?",a:["Nacional y provincial","Económico, político e ideológico","Transversal y subeconómico"],c:1,why:"En este tema se distinguen las formas económica, política e ideológica."},
+{cat:"tipos",q:"¿Qué implica el dominio económico de una potencia sobre otro territorio?",a:["Influir en sus recursos, producción o comercio","Controlar únicamente sus fiestas nacionales","Que no existan relaciones comerciales"],c:0,why:"El dominio económico implica influir o controlar recursos, producción o comercio."},
+{cat:"tipos",q:"¿Qué significa ejercer dominio político sobre un territorio?",a:["Cambiar solamente sus productos agrícolas","No intervenir nunca en sus decisiones","Influir o controlar sus decisiones de gobierno"],c:2,why:"El dominio político supone influir o controlar las decisiones de gobierno."}
+];
+const names={imperialismo:"Imperialismo",surgimiento:"Surgimiento",industria:"Revolución Industrial",tipos:"Tipos de imperialismo"};
+let list=[],index=0,score=0,locked=false,answered=0;
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function showCategories(){startAll()}
+function startCategory(cat){begin(bank.filter(x=>x.cat===cat))}
+function startAll(){begin([...bank])}
+function begin(arr){list=arr;index=0;score=0;answered=0;show('quiz');render()}
+function render(){locked=false;const item=list[index];document.getElementById('counter').textContent=`Pregunta ${index+1} de ${list.length}`;document.getElementById('bar').style.width=`${index/list.length*100}%`;document.getElementById('question').textContent=item.q;document.getElementById('feedback').textContent='';document.getElementById('next').style.display='none';const area=document.getElementById('answers');area.innerHTML='';item.a.forEach((label,i)=>{const b=document.createElement('button');b.className='answer';b.textContent=String.fromCharCode(65+i)+'. '+label;b.onclick=()=>choose(i,b);area.appendChild(b)})}
+function choose(choice,button){if(locked)return;locked=true;const item=list[index];const buttons=[...document.querySelectorAll('.answer')];buttons.forEach((b,i)=>{b.disabled=true;if(i===item.c)b.classList.add('correct')});if(choice===item.c){score++;document.getElementById('feedback').textContent='¡Muy bien! '+item.why}else{button.classList.add('wrong');document.getElementById('feedback').textContent='¡A seguir aprendiendo! '+item.why}answered++;document.getElementById('next').style.display='block';document.getElementById('bar').style.width=`${(index+1)/list.length*100}%`;document.getElementById('next').textContent=index===list.length-1?'Ver resultado →':'Siguiente pregunta →'}
+function nextQuestion(){if(index<list.length-1){index++;render()}else{show('results');document.getElementById('score').textContent=`${score} / ${list.length}`;let pct=score/list.length;document.getElementById('resultText').textContent=pct===1?'¡Excelente! Plumitas está orgulloso de vos.':pct>=.7?'¡Muy buen trabajo! Repasá las respuestas y vas a saber todavía más.':'¡Buen intento! Podés volver a jugar y aprender con cada pregunta.'}}
+</script>
+</body></html>
